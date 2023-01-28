@@ -12,6 +12,12 @@ results$consensus_accuracy <- signif(results$consensus_accuracy, digits = 2)
 results$exposure_ratio <- signif(results$exposure_ratio, digits = 2)
 
 
+
+gamma_r <- read_csv("mallows_gamma_results.csv")
+gamma_r$consensus_accuracy <- signif(gamma_r$consensus_accuracy, digits = 2)
+gamma_r$exposure_ratio <- signif(gamma_r$exposure_ratio, digits = 2)
+
+
 mallows_string <- "mallows dispersion (\U1D719)"
 rr_string <- "reference ranking"
 high_consensus_color <- "#88419d"#"#3f007d"
@@ -109,9 +115,9 @@ comp_kem <- ggarrange(figure_C_kem, figure_f_kem, ncol = 2, nrow = 1)
 # pdfheight <- 3 
 pdfwidth <- 12
 pdfheight <- 2
-
-ggsave(comp_kem, filename = 'plots/heatmaps_kem_epik.pdf', device = cairo_pdf,
-       width = pdfwidth, height = pdfheight, units = "in")
+#uncomment
+# ggsave(comp_kem, filename = 'plots/heatmaps_kem_epik.pdf', device = cairo_pdf,
+#        width = pdfwidth, height = pdfheight, units = "in")
 
 
 
@@ -126,8 +132,9 @@ comp <- ggarrange(figure_C, figure_f, ncol = 2, nrow = 1)
 pdfwidth <- 12
 pdfheight <- 4
 
-ggsave(comp, filename = 'plots/comparative_maps.pdf', device = cairo_pdf,
-       width = pdfwidth, height = pdfheight, units = "in")
+#uncomment
+# ggsave(comp, filename = 'plots/comparative_maps.pdf', device = cairo_pdf,
+#        width = pdfwidth, height = pdfheight, units = "in")
 
 
 
@@ -170,6 +177,82 @@ a_plot <- ggplot(ablation, aes(mallows_dispersion, as.factor(reference_ranking))
 
 pdfwidth <- 5
 pdfheight <- 3
+#uncomment
+# ggsave(a_plot, filename = 'plots/epir_ablation.pdf', device = cairo_pdf,
+#        width = pdfwidth, height = pdfheight, units = "in")
 
-ggsave(a_plot, filename = 'plots/epir_ablation.pdf', device = cairo_pdf,
+
+#GAMMA VALUES
+
+consensus_legend <- "CA"
+six <- gamma_r %>%
+  filter(Gamma == 0.6)
+
+
+c_epik6 <- consensus_map(six, "EPIK")
+f_epik6 <- fairness_map(six, "EPIK")
+c_epira_cop6 <- consensus_map(six, "EPIRA+Copeland")
+f_epira_cop6 <- fairness_map(six, "EPIRA+Copeland")
+figure_C_6 <- ggarrange(c_epik6, c_epira_cop6,
+                          ncol = 2, nrow = 1, common.legend = TRUE, legend = "right")
+
+figure_f_6 <- ggarrange(f_epik6, f_epira_cop6,
+                          ncol = 2, nrow = 1, common.legend = TRUE, legend = "right")
+
+comp_6 <- ggarrange(figure_C_6, figure_f_6, ncol = 2, nrow = 1)
+
+pdfwidth <- 12
+pdfheight <- 2
+#uncomment
+ggsave(comp_6, filename = 'plots/gamma_six.pdf', device = cairo_pdf,
        width = pdfwidth, height = pdfheight, units = "in")
+
+
+seven <- gamma_r %>%
+  filter(Gamma == 0.7)
+
+
+c_epik7 <- consensus_map(seven, "EPIK")
+f_epik7 <- fairness_map(seven, "EPIK")
+c_epira_cop7 <- consensus_map(seven, "EPIRA+Copeland")
+f_epira_cop7 <- fairness_map(seven, "EPIRA+Copeland")
+figure_C_7 <- ggarrange(c_epik7, c_epira_cop7,
+                        ncol = 2, nrow = 1, common.legend = TRUE, legend = "right")
+
+figure_f_7 <- ggarrange(f_epik7, f_epira_cop7,
+                        ncol = 2, nrow = 1, common.legend = TRUE, legend = "right")
+
+comp_7 <- ggarrange(figure_C_7, figure_f_7, ncol = 2, nrow = 1)
+
+
+#uncomment
+ggsave(comp_7, filename = 'plots/gamma_seven.pdf', device = cairo_pdf,
+       width = pdfwidth, height = pdfheight, units = "in")
+
+
+eight <- gamma_r %>%
+  filter(Gamma == 0.8)
+
+
+c_epik8 <- consensus_map(eight, "EPIK")
+f_epik8 <- fairness_map(eight, "EPIK")
+c_epira_cop8 <- consensus_map(eight, "EPIRA+Copeland")
+f_epira_cop8 <- fairness_map(eight, "EPIRA+Copeland")
+figure_C_8 <- ggarrange(c_epik8, c_epira_cop8,
+                        ncol = 2, nrow = 1, common.legend = TRUE, legend = "right")
+
+figure_f_8 <- ggarrange(f_epik8, f_epira_cop8,
+                        ncol = 2, nrow = 1, common.legend = TRUE, legend = "right")
+
+comp_8 <- ggarrange(figure_C_8, figure_f_8, ncol = 2, nrow = 1)
+
+
+#uncomment
+ggsave(comp_8, filename = 'plots/gamma_eight.pdf', device = cairo_pdf,
+       width = pdfwidth, height = pdfheight, units = "in")
+
+
+
+
+
+

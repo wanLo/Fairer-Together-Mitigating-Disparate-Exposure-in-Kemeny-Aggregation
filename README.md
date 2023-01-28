@@ -37,6 +37,10 @@ See the CSRankings_Datasets directory.
 
 All experiments utilizing the cs rankings dataset are performed in the `run_csrankings.py` script, with results written to `<dataset name>_results.csv` files. This includes running all proposed algorithms, comparative baselines, and running EPIRA with different voting rules.
 
+### Gamma Parameter.
+See the Mallows_Datasets directory.
+
+All experiments utilizing the Mallows datasets are performed in the `gamma_values.py` script, with results written to the `mallows_gamma_results.csv` file. .
 
 #### Helper Functions:
 Functions to calculate consensus accuracy and exposure ratio are in the metric directory.
