@@ -8,7 +8,7 @@ from more_itertools import unique_everseen
 from metrics.exposure_ratio import *
 from baselines.kemeny import *
 
-def epiRA(base_ranks, item_ids, group_ids, bnd, grporder, agg_method):
+def epiRA(base_ranks, item_ids, group_ids, bnd, grporder, agg_method, print_swaps=True):
    """
    Function to perform fair exposure rank aggregation via post-processing a voting rule.
    :param base_ranks: Assumes zero index. Numpy array of # voters x # items representing the base rankings.
@@ -18,27 +18,33 @@ def epiRA(base_ranks, item_ids, group_ids, bnd, grporder, agg_method):
    :param bnd: Desired minimum exposure ratio of consensus ranking
    :param grporder: True - re orders consensus ranking to preserve within group order. False does not preserve within group order.
    :param agg_method: String indicating which voting rule to use. 'Kemeny', 'Copeland', 'Schulze', 'Borda', 'Maximin'.
+   :param print_swaps: whether or not to indicate which elements where swapped.
    :return: consensus: A numpy array of item ides representing the consensus ranking. ranking_group_ids: a numy array of
     group ids corresponding to the group membership of each item in the consensus.
    """
 
    num_voters, num_items = np.shape(base_ranks)
-   if agg_method == "Copeland":
+
+   if agg_method == None:
+       consensus, consensus_group_ids = list(base_ranks[0].astype(int)), group_ids[base_ranks[0].astype(int)]
+       current_ranking, current_group_ids = base_ranks[0].astype(int), group_ids[base_ranks[0].astype(int)]
+   
+   elif agg_method == "Copeland":
        consensus, consensus_group_ids, current_ranking, current_group_ids = copeland(base_ranks, item_ids, group_ids)
 
-   if agg_method == "Kemeny":
+   elif agg_method == "Kemeny":
        kemeny_r, kemeny_group_ids = kemeny(base_ranks, item_ids, group_ids)
        consensus = list(kemeny_r)
        current_ranking = np.asarray(consensus)
        consensus_group_ids = np.asarray(kemeny_group_ids)
        current_group_ids = consensus_group_ids
 
-   if agg_method == "Borda":
+   elif agg_method == "Borda":
        consensus, consensus_group_ids, current_ranking, current_group_ids = borda(base_ranks, item_ids, group_ids)
 
-   if agg_method == "Schulze":
+   elif agg_method == "Schulze":
        consensus, consensus_group_ids, current_ranking, current_group_ids = schulze(base_ranks, item_ids, group_ids)
-   if agg_method == "Maximin":
+   elif agg_method == "Maximin":
        consensus, consensus_group_ids, current_ranking, current_group_ids = maximin(base_ranks, item_ids, group_ids)
 
 
@@ -89,9 +95,9 @@ def epiRA(base_ranks, item_ids, group_ids, bnd, grporder, agg_method):
        indx = (np.abs(exp - boost)).argmin() #find position with closest exposure to boost
 
        min_grp_item = current_ranking[indx_highest_grp_min_item]
-       print("min_grp_item",min_grp_item)
+       if print_swaps: print("min_grp_item",min_grp_item)
        swapping_item = current_ranking[indx]
-       print("swapping_item", swapping_item)
+       if print_swaps: print("swapping_item", swapping_item)
        #put swapping item in min_grp_item position
        current_ranking[indx_highest_grp_min_item] = swapping_item
        #put min_group_item at indx
@@ -103,7 +109,7 @@ def epiRA(base_ranks, item_ids, group_ids, bnd, grporder, agg_method):
        current_group_ids = [group_ids[np.argwhere(item_ids == i)[0][0]] for i in current_ranking]
        #set up next loop
        cur_exp, avg_exps = calc_exposure_ratio(current_ranking, current_group_ids)
-       print("exposure after swap:", cur_exp)
+       if print_swaps: print("exposure after swap:", cur_exp)
 
 
    if grporder == True: #Reorder to preserve consensus
